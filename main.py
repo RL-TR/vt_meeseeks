@@ -59,23 +59,37 @@ def main():
     except Exception as err: 
         print("ERROR: Failed to create output file. {}".format(err))
 
+    # open primary lookup for comparison 
+    #LOOKUP = open("primary_lookups/{}_lookup_primary.csv".format(args.ioc_type), 'r')
 
     if args.ioc_type == "domain":
         domain_functions.add_column_headers(csv_obj)
         
         with open(args.input_file, 'r') as FIN:
-            for domain in FIN:
-                domain = domain.strip('\n') # remove new line 
-                domain_result = domain_functions.check_domain(vt_client, domain)
-                domain_functions.write_to_output(csv_obj, domain_result)
-
+            with  open("primary_lookups/{}_lookup_primary.csv".format(args.ioc_type), 'r') as LOOKUP:
+                lookup_reader = csv.reader(LOOKUP, delimiter=",")
+                for domain in FIN:
+                    domain = domain.strip("\n")
+                    print("DEBUG domain: ", repr(domain)) 
+                    for row in lookup_reader:
+                        #int("DEBUG row: ", row)
+                        print("DEBUG row[1]: ", repr(row[1]))
+                        if domain == row[1]:
+                            print('INFO: match found in lookup for {}. Checking next domain in input list.'.format(domain))
+                            break
+                        else:
+                            continue
+                    else:
+                        print("INFO: No match found for {}".format(domain))
+                        domain = domain.strip('\n') # remove new line 
+                        domain_result = domain_functions.get_domain_info(vt_client, domain)
+                        domain_functions.write_to_output(csv_obj, domain_result)
+                
+                
     '''ADD CODE FOR HASH HEADERS'''
     
     
             
-            
- 
-
 
 if __name__ == '__main__':
     main()

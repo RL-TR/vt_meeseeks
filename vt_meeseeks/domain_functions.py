@@ -17,7 +17,8 @@ def add_column_headers(csv_obj):
         print('ERROR: Failed to add column heads to output file. {}'.format(err))
 
 
-def check_domain(vt_client, domain):
+
+def get_domain_info(vt_client, domain):
 
     #print("DEBUG domain: ", domain  )
 
@@ -32,21 +33,12 @@ def check_domain(vt_client, domain):
     try:    
         result = vt_client.get_object("/domains/{}".format(domain))
 
-        print(dir(result))
-        print(result._error)
-        print(result.id)
-
-        print(result.last_analysis_stats)
-        print(result.creation_date)
-        print(result.popularity_ranks)
-        print(dir(vt_client))
-
         malicious_num = result.last_analysis_stats["malicious"]
-        harmeless_num = result.last_analysis_stats["harmless"]
+        harmless_num = result.last_analysis_stats["harmless"]
         suspicious_num = result.last_analysis_stats["suspicious"]
         undetected_num = result.last_analysis_stats["undetected"]
 
-        total_results = malicious_num + harmeless_num + suspicious_num + undetected_num
+        total_results = malicious_num + harmless_num + suspicious_num + undetected_num
         malicious_results = malicious_num + suspicious_num
 
         
